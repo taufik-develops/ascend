@@ -1,0 +1,24 @@
+# Render deployment config.
+# Render reads this automatically when you connect the repo.
+# Secrets are NOT in here — you paste those into Render's dashboard.
+
+services:
+  - type: web
+    name: ascend
+    runtime: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /api/config
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: GEMINI_MODEL
+        value: gemini-3.8-flash
+      - key: OPENROUTER_MODEL
+        value: thinkingmachines/inkling:free
+      # These two are secret — set them in the Render dashboard, not here.
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: OPENROUTER_API_KEY
+        sync: false

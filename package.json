@@ -1,0 +1,22 @@
+{
+  "name": "ascend",
+  "version": "1.0.0",
+  "description": "Ascend \u2014 AI life coach web app. Level up in real life.",
+  "main": "server.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "check-secrets": "node check-secrets.js"
+  },
+  "dependencies": {
+    "compression": "^1.8.2",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "express-rate-limit": "^8.7.0",
+    "multer": "^1.4.5-lts.1"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

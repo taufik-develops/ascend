@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="theme-color" content="#05070a" />
+<title>Ascend — Level up in real life</title>
+<link rel="stylesheet" href="styles.css" />
+<link rel="icon" href="/icon-192.png" />
+<link rel="apple-touch-icon" href="/icon-192.png" />
+<link rel="manifest" href="/manifest.json" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="Ascend" />
+<meta name="description" content="Your AI coach for training, food, posture, style and speaking." />
+</head>
+<body>
+
+<div id="keyWarning" class="key-warning" hidden>
+  <strong>No API key loaded.</strong>
+  Copy <code>.env.example</code> → <code>.env</code>, paste your Gemini key, then restart the server.
+</div>
+
+<main id="app">
+
+  <!-- ============ TODAY ============ -->
+  <section class="screen" data-screen="today">
+    <div class="brandbar">
+      <img src="/icon-192.png" alt="" class="brandmark" />
+      <div><div class="brandname" id="brandName">Ascend</div>
+      <div class="muted small" id="brandTag">Level up in real life.</div></div>
+    </div>
+
+    <header class="screen-head">
+      <div>
+        <h1>Today's Plan</h1>
+        <p class="muted" id="todayDate"></p>
+      </div>
+    </header>
+
+    <div class="hero-card">
+      <div class="ring" id="progressRing">
+        <span id="progressPct">0%</span>
+      </div>
+      <div class="hero-meta">
+        <div class="rank-row">
+          <span class="rank-chip" id="heroRankIcon">🛡️</span>
+          <div>
+            <div class="rank-name" id="heroRankName">Kickoff</div>
+            <div class="muted small"><span id="heroXp">0</span> XP total</div>
+          </div>
+          <span class="pill" id="heroWeek">Week 1</span>
+        </div>
+        <div class="week-dots" id="weekDots"></div>
+      </div>
+    </div>
+
+    <h2 class="section-label">☀️ Morning</h2>
+    <div class="list" id="listMorning"></div>
+    <h2 class="section-label">🌤️ Afternoon</h2>
+    <div class="list" id="listAfternoon"></div>
+    <h2 class="section-label">🌙 Evening</h2>
+    <div class="list" id="listEvening"></div>
+  </section>
+
+  <!-- ============ COACH ============ -->
+  <section class="screen" data-screen="coach" hidden>
+    <header class="screen-head">
+      <div>
+        <h1>Coach Features</h1>
+        <p class="muted">Select a feature to get personalized coaching</p>
+      </div>
+    </header>
+    <div class="list" id="featureList"></div>
+  </section>
+
+  <!-- ============ VOICE ============ -->
+  <section class="screen" data-screen="voice" hidden>
+    <header class="screen-head">
+      <div>
+        <h1>Voice Coach</h1>
+        <p class="muted">Practice speaking with a random prompt and get feedback</p>
+      </div>
+    </header>
+
+    <div class="card prompt-card">
+      <div class="muted small">YOUR PROMPT</div>
+      <p id="voicePrompt" class="prompt-text">Loading…</p>
+      <button class="btn ghost" id="newPromptBtn">🎲 New prompt</button>
+    </div>
+
+    <div class="card center">
+      <button class="mic-btn" id="micBtn" aria-label="Record">🎙️</button>
+      <div class="muted small" id="micStatus">Tap to start recording</div>
+      <div class="timer" id="micTimer" hidden>0:00</div>
+    </div>
+    <div id="voiceResult"></div>
+  </section>
+
+  <!-- ============ RANKS ============ -->
+  <section class="screen" data-screen="ranks" hidden>
+    <header class="screen-head center-head">
+      <h1 class="tracked">RANK LADDER</h1>
+    </header>
+
+    <div class="card shield-card">
+      <div class="shield" id="shieldIcon">🛡️</div>
+      <div class="pill big" id="rankLevelPill">LEVEL 1 • KICKOFF</div>
+      <div class="muted small spaced">CURRENT XP</div>
+      <div class="xp-big" id="xpBig">0</div>
+      <div class="bar"><div class="bar-fill" id="xpBar"></div></div>
+      <div class="bar-labels">
+        <span id="xpToNext">—</span>
+        <span id="xpPct">0%</span>
+      </div>
+    </div>
+
+    <div class="list" id="ladderList"></div>
+  </section>
+
+  <!-- ============ PROFILE ============ -->
+  <section class="screen" data-screen="profile" hidden>
+    <header class="screen-head"><h1>Profile</h1></header>
+    <div class="card">
+      <div class="stat-grid">
+        <div><div class="stat-num" id="pStreak">0</div><div class="muted small">Day streak</div></div>
+        <div><div class="stat-num" id="pXp">0</div><div class="muted small">Total XP</div></div>
+        <div><div class="stat-num" id="pScans">0</div><div class="muted small">Scans done</div></div>
+        <div><div class="stat-num" id="pRank">—</div><div class="muted small">Rank</div></div>
+      </div>
+    </div>
+    <div class="card" id="trendBox" hidden></div>
+
+    <h2 class="section-label">📈 Your history</h2>
+    <div class="list" id="historyList"></div>
+
+    <div class="card" style="margin-top:14px">
+      <h3>Backup</h3>
+      <p class="muted small">Your progress lives in this browser only. Export a backup file now
+      and then, so clearing browser data (or switching device) never wipes your streak.</p>
+      <button class="btn ghost" id="exportBtn">⬇️ Export backup</button>
+      <label class="btn ghost" style="display:block;text-align:center">
+        ⬆️ Restore from backup
+        <input type="file" id="importInput" accept="application/json" hidden />
+      </label>
+    </div>
+
+    <div class="card">
+      <h3>Your data</h3>
+      <p class="muted small">Everything is stored only in this browser. Nothing is uploaded except the
+      photos and audio you choose to analyse, which go to Google Gemini and are not kept by this app.</p>
+      <button class="btn danger" id="resetBtn">Reset all progress</button>
+    </div>
+    <p class="disclaimer">
+      <span id="disclaimerText">⚠️ Ascend gives general wellness and coaching guidance only. It is not
+      medical, nutritional, or psychological advice. Consult a qualified professional for health concerns.</span>
+      <br /><br /><span class="muted" id="brandFooter">Ascend</span>
+    </p>
+  </section>
+
+</main>
+
+<!-- ============ SCANNER MODAL ============ -->
+<div class="modal" id="scanModal" hidden>
+  <div class="modal-inner">
+    <button class="close" id="scanClose" aria-label="Close">✕</button>
+    <h2 id="scanTitle">Scan</h2>
+    <p class="muted small" id="scanBlurb"></p>
+
+    <label class="dropzone" id="dropzone">
+      <input type="file" id="fileInput" accept="image/*" hidden />
+      <img id="preview" alt="" hidden />
+      <div id="dropHint">
+        <div class="drop-icon">📷</div>
+        <div>Tap to take or choose a photo</div>
+        <div class="muted small">On phone this opens your camera</div>
+      </div>
+    </label>
+
+    <button class="btn primary" id="analyzeBtn" disabled>Analyze</button>
+    <div id="scanResult"></div>
+  </div>
+</div>
+
+<!-- ============ CHAT MODAL ============ -->
+<div class="modal" id="chatModal" hidden>
+  <div class="modal-inner chat-inner">
+    <button class="close" id="chatClose" aria-label="Close">✕</button>
+    <h2>💬 Chat with Coach</h2>
+    <div class="chat-log" id="chatLog"></div>
+    <form class="chat-form" id="chatForm">
+      <input id="chatInput" placeholder="Ask your coach anything…" autocomplete="off" />
+      <button class="btn primary send" type="submit">↑</button>
+    </form>
+  </div>
+</div>
+
+<div class="toast" id="toast" hidden></div>
+
+<!-- ============ BOTTOM NAV ============ -->
+<nav class="nav">
+  <button class="nav-btn active" data-go="today"><span>🏠</span>Home</button>
+  <button class="nav-btn" data-go="coach"><span>✨</span>Coach</button>
+  <button class="nav-btn" data-go="voice"><span>🎙️</span>Voice</button>
+  <button class="nav-btn" data-go="ranks"><span>🏆</span>Ranks</button>
+  <button class="nav-btn" data-go="profile"><span>👤</span>Profile</button>
+</nav>
+
+<script src="app.js"></script>
+</body>
+</html>
